@@ -24,6 +24,22 @@ type Category = { id: string; name: string };
 const PLACEHOLDER =
   'https://cdn.poehali.dev/projects/dd4f9dfb-21af-43ef-9911-ef437189e13f/files/c1ea403c-627b-4ade-9eed-225abbe3518b.jpg';
 
+/** Цена в рублях с разделением разрядов неразрывным пробелом */
+const formatPrice = (raw: string | number): string | null => {
+  const n = Number(raw);
+  if (!raw || !Number.isFinite(n) || n <= 0) return null;
+  return `${new Intl.NumberFormat('ru-RU').format(Math.round(n)).replace(/\s/g, '\u00A0')}\u00A0₽`;
+};
+
+/** Поиск значения параметра по части слова в названии (без учёта регистра) */
+const findParamByKey = (params: Record<string, string>, needle: string): string => {
+  const n = needle.toLowerCase();
+  for (const [k, v] of Object.entries(params || {})) {
+    if (k.toLowerCase().includes(n) && v) return v;
+  }
+  return '';
+};
+
 const ProductGallery = ({ pictures, alt }: { pictures: string[]; alt: string }) => {
   const [idx, setIdx] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -31,12 +47,12 @@ const ProductGallery = ({ pictures, alt }: { pictures: string[]; alt: string }) 
 
   return (
     <>
-      <div className="relative h-56 overflow-hidden bg-white group">
+      <div className="relative aspect-square overflow-hidden bg-white group">
         <img
           src={src}
           alt={alt}
           onClick={() => pictures.length > 0 && setLightbox(true)}
-          className="w-full h-full object-cover cursor-zoom-in group-hover:scale-105 transition duration-500"
+          className="w-full h-full object-contain p-4 cursor-zoom-in group-hover:scale-105 transition duration-500"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = PLACEHOLDER;
           }}
@@ -161,11 +177,11 @@ const ProductModal = ({
                   {product.vendor}
                 </div>
               )}
-              {product.price && Number(product.price) > 0 && (
+              {formatPrice(product.price) && (
                 <div className="mb-4">
                   <div className="text-xs text-white/50">Цена</div>
                   <div className="font-oswald text-3xl font-bold text-fire-gradient">
-                    {Number(product.price).toLocaleString('ru-RU')} ₽
+                    {formatPrice(product.price)}
                   </div>
                 </div>
               )}
@@ -256,7 +272,17 @@ const Catalog = ({ onLead }: { onLead: (source: string, payload?: Record<string,
           (i.performance || '').toLowerCase().includes(q),
       );
     }
-    return list;
+    // Сортировка: сначала с ценой по возрастанию, затем товары без цены
+    return [...list].sort((a, b) => {
+      const pa = Number(a.price);
+      const pb = Number(b.price);
+      const aHas = Number.isFinite(pa) && pa > 0;
+      const bHas = Number.isFinite(pb) && pb > 0;
+      if (aHas && bHas) return pa - pb;
+      if (aHas) return -1;
+      if (bHas) return 1;
+      return 0;
+    });
   }, [items, activeCat, search]);
 
   return (
@@ -336,57 +362,87 @@ const Catalog = ({ onLead }: { onLead: (source: string, payload?: Record<string,
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.map((p, i) => (
-                  <article
-                    key={p.id}
-                    style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
-                    className="card-hover group bg-coal-mid rounded-2xl overflow-hidden border border-coal-light animate-fade-in-up flex flex-col"
-                  >
-                    <ProductGallery pictures={p.pictures} alt={p.name} />
+                {filtered.map((p, i) => {
+                  const priceText = formatPrice(p.price);
+                  const tray = findParamByKey(p.params, 'противен');
+                  const temperature = findParamByKey(p.params, 'температур');
+                  return (
+                    <article
+                      key={p.id}
+                      style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
+                      className="card-hover group bg-coal-mid rounded-2xl overflow-hidden border border-coal-light animate-fade-in-up flex flex-col"
+                    >
+                      <ProductGallery pictures={p.pictures} alt={p.name} />
 
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex items-start gap-2 mb-2">
-                        {p.vendor && (
-                          <span className="px-2 py-0.5 rounded-full bg-fire/10 border border-fire/30 text-fire text-[10px] uppercase font-medium">
-                            {p.vendor}
-                          </span>
-                        )}
-                        {p.available && (
-                          <span className="px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/40 text-green-400 text-[10px] uppercase font-medium">
-                            В наличии
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-oswald text-lg text-white mb-2 leading-tight line-clamp-2">
-                        {p.name}
-                      </h3>
-
-                      {p.performance && (
-                        <div className="flex items-center gap-2 text-sm text-white/70 mb-3">
-                          <Icon name="Gauge" size={14} className="text-fire" />
-                          <span>Производительность: {p.performance}</span>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="flex items-start gap-2 mb-2 flex-wrap">
+                          {p.vendor && (
+                            <span className="px-2 py-0.5 rounded-full bg-fire/10 border border-fire/30 text-fire text-[10px] uppercase font-medium">
+                              {p.vendor}
+                            </span>
+                          )}
+                          {p.available && (
+                            <span className="px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/40 text-green-400 text-[10px] uppercase font-medium">
+                              В наличии
+                            </span>
+                          )}
                         </div>
-                      )}
+                        <h3 className="font-oswald text-lg text-white mb-2 leading-tight line-clamp-2">
+                          {p.name}
+                        </h3>
 
-                      <div className="mt-auto flex items-center gap-2 pt-3 border-t border-coal-light">
-                        <button
-                          onClick={() => setModal(p)}
-                          className="flex-1 px-3 py-2 rounded-lg bg-coal border border-coal-light text-white text-sm hover:border-fire transition flex items-center justify-center gap-1"
-                        >
-                          Подробнее
-                          <Icon name="ArrowRight" size={14} />
-                        </button>
-                        <button
-                          onClick={() => onLead('catalog', { productId: p.id, productName: p.name })}
-                          className="px-3 py-2 rounded-lg bg-gradient-to-r from-fire to-fire-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-fire/30 transition flex items-center gap-1"
-                        >
-                          <Icon name="Send" size={14} />
-                          Заявка
-                        </button>
+                        <div className="space-y-1.5 mb-3">
+                          {p.performance && (
+                            <div className="flex items-center gap-2 text-sm text-white/70">
+                              <Icon name="Gauge" size={14} className="text-fire flex-shrink-0" />
+                              <span className="line-clamp-1">Производительность: {p.performance}</span>
+                            </div>
+                          )}
+                          {tray && (
+                            <div className="flex items-center gap-2 text-sm text-white/70">
+                              <Icon name="LayoutGrid" size={14} className="text-fire flex-shrink-0" />
+                              <span className="line-clamp-1">Противень: {tray}</span>
+                            </div>
+                          )}
+                          {temperature && (
+                            <div className="flex items-center gap-2 text-sm text-white/70">
+                              <Icon name="Thermometer" size={14} className="text-fire flex-shrink-0" />
+                              <span className="line-clamp-1">Температура: {temperature}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {priceText && (
+                          <div className="mb-3 pt-3 border-t border-coal-light">
+                            <div className="text-[10px] uppercase tracking-wider text-white/50 mb-0.5">
+                              Цена
+                            </div>
+                            <div className="font-oswald text-2xl font-bold text-fire-gradient">
+                              {priceText}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className={`mt-auto flex items-center gap-2 ${priceText ? '' : 'pt-3 border-t border-coal-light'}`}>
+                          <button
+                            onClick={() => setModal(p)}
+                            className="flex-1 px-3 py-2 rounded-lg bg-coal border border-coal-light text-white text-sm hover:border-fire transition flex items-center justify-center gap-1"
+                          >
+                            Подробнее
+                            <Icon name="ArrowRight" size={14} />
+                          </button>
+                          <button
+                            onClick={() => onLead('catalog', { productId: p.id, productName: p.name })}
+                            className="px-3 py-2 rounded-lg bg-gradient-to-r from-fire to-fire-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-fire/30 transition flex items-center gap-1"
+                          >
+                            <Icon name="Send" size={14} />
+                            Заявка
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             )}
           </>
