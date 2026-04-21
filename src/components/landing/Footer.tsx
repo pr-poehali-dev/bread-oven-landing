@@ -16,7 +16,7 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="https://cdn.poehali.dev/files/ca89fddf-7bc6-4cd1-9d5f-5696c3edbc2d.jpg"
-                alt="ТЕХНОСИБ"
+                alt="Техно-Сиб"
                 className="h-12 w-auto bg-white rounded-md p-1"
               />
               <div className="text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
@@ -90,7 +90,7 @@ const Footer = () => {
           className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4 text-sm"
           style={{ borderColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
         >
-          <div>© {new Date().getFullYear()} ТЕХНОСИБ. Все права защищены.</div>
+          <div>© {new Date().getFullYear()} Техно-Сиб. Все права защищены.</div>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-fire transition">Политика конфиденциальности</a>
             <a href="#" className="hover:text-fire transition">Оферта</a>

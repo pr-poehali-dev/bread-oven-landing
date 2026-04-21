@@ -16,15 +16,15 @@ const Header = ({ onLead }: { onLead: (source: string) => void }) => {
         <a href="#home" className="flex items-center gap-3 flex-shrink-0">
           <img
             src="https://cdn.poehali.dev/files/ca89fddf-7bc6-4cd1-9d5f-5696c3edbc2d.jpg"
-            alt="ТЕХНОСИБ"
+            alt="Техно-Сиб"
             className="h-12 md:h-14 w-auto bg-white rounded-lg p-1.5 shadow-md"
           />
           <div className="hidden sm:flex flex-col leading-tight max-w-[200px]">
             <span
-              className="text-[11px] uppercase tracking-[0.15em] font-semibold"
-              style={{ color: 'hsl(var(--ink) / 0.55)' }}
+              className="text-[13px] uppercase tracking-[0.15em] font-bold"
+              style={{ color: 'hsl(var(--ink))' }}
             >
-              Техносиб
+              Техно-Сиб
             </span>
             <span
               className="text-[12px] md:text-[13px] mt-0.5"

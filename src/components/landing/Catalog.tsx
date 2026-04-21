@@ -197,7 +197,7 @@ const ProductModal = ({
               {formatPrice(product.price) && (
                 <div className="mb-4">
                   <div className="text-xs text-white/50">Цена</div>
-                  <div className="font-oswald text-3xl font-bold text-fire-gradient">
+                  <div className="font-oswald text-3xl font-bold text-fire">
                     {formatPrice(product.price)}
                   </div>
                 </div>
@@ -230,9 +230,9 @@ const ProductModal = ({
 
           {product.description && (
             <div>
-              <h4 className="font-oswald text-lg text-white mb-3">Описание</h4>
+              <h4 className="font-oswald text-2xl text-white mb-4">Описание</h4>
               <div
-                className="text-white/70 text-sm leading-relaxed prose max-w-none"
+                className="text-white/85 text-lg md:text-xl leading-relaxed prose prose-invert max-w-none"
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
             </div>
@@ -377,56 +377,64 @@ const Catalog = ({ onLead }: { onLead: (source: string, payload?: Record<string,
                       <ProductGallery pictures={p.pictures} alt={p.name} onImageClick={() => setModal(p)} />
 
                       <div className="p-5 flex flex-col flex-1">
-                        {p.vendor && (
-                          <div className="mb-2">
-                            <span className="px-2.5 py-1 rounded-full bg-fire/10 border border-fire/30 text-fire text-xs uppercase font-medium">
-                              {p.vendor}
-                            </span>
-                          </div>
-                        )}
-                        <h3 className="font-oswald text-xl md:text-2xl text-white mb-3 leading-tight line-clamp-2">
-                          {p.name}
-                        </h3>
-
-                        {p.performance && (
-                          <div className="flex items-center gap-2 text-base text-white mb-3">
-                            <Icon name="Gauge" size={18} className="text-fire flex-shrink-0" />
-                            <span>
-                              <span className="text-white/80">Производительность:</span>{' '}
-                              <span className="font-semibold">{p.performance}</span>
-                            </span>
-                          </div>
-                        )}
-
-                        {allParams.length > 0 && (
-                          <div className="mb-3 grid grid-cols-1 gap-1.5">
-                            {allParams.map(([k, v]) => (
-                              <div
-                                key={k}
-                                className="flex items-start gap-2 text-base"
-                              >
-                                <Icon name="Dot" size={18} className="text-fire flex-shrink-0 mt-0.5" />
-                                <div className="text-white leading-snug">
-                                  <span className="text-white/80">{k}:</span>{' '}
-                                  <span className="font-semibold">{v}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {priceText && (
-                          <div className="mb-3 pt-3 border-t border-coal-light">
-                            <div className="text-xs uppercase tracking-wider text-white/50 mb-1">
-                              Цена
+                        {/* Верхняя часть карточки — растягивается, выравнивая нижние блоки */}
+                        <div className="flex-1">
+                          {p.vendor && (
+                            <div className="mb-2">
+                              <span className="px-2.5 py-1 rounded-full bg-fire/10 border border-fire/30 text-fire text-xs uppercase font-medium">
+                                {p.vendor}
+                              </span>
                             </div>
-                            <div className="font-oswald text-3xl font-bold text-fire-gradient">
+                          )}
+                          <h3 className="font-oswald text-xl md:text-2xl text-white mb-3 leading-tight line-clamp-2">
+                            {p.name}
+                          </h3>
+
+                          {p.performance && (
+                            <div className="flex items-center gap-2 text-base text-white mb-3">
+                              <Icon name="Gauge" size={18} className="text-fire flex-shrink-0" />
+                              <span>
+                                <span className="text-white/80">Производительность:</span>{' '}
+                                <span className="font-semibold">{p.performance}</span>
+                              </span>
+                            </div>
+                          )}
+
+                          {allParams.length > 0 && (
+                            <div className="mb-3 grid grid-cols-1 gap-1.5">
+                              {allParams.map(([k, v]) => (
+                                <div
+                                  key={k}
+                                  className="flex items-start gap-2 text-base"
+                                >
+                                  <Icon name="Dot" size={18} className="text-fire flex-shrink-0 mt-0.5" />
+                                  <div className="text-white leading-snug">
+                                    <span className="text-white/80">{k}:</span>{' '}
+                                    <span className="font-semibold">{v}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Цена — всегда на одном уровне внизу карточки */}
+                        <div className="pt-3 border-t border-coal-light min-h-[72px] flex flex-col justify-end">
+                          <div className="text-xs uppercase tracking-wider text-white/50 mb-1">
+                            Цена
+                          </div>
+                          {priceText ? (
+                            <div className="font-oswald text-3xl font-bold text-fire">
                               {priceText}
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="font-oswald text-xl font-semibold text-white/70">
+                              По запросу
+                            </div>
+                          )}
+                        </div>
 
-                        <div className={`mt-auto flex items-center gap-2 ${priceText ? '' : 'pt-3 border-t border-coal-light'}`}>
+                        <div className="mt-4 flex items-center gap-2">
                           <button
                             onClick={() => setModal(p)}
                             className="flex-1 px-4 py-3 rounded-lg bg-coal border border-coal-light text-white text-base hover:border-fire transition flex items-center justify-center gap-2"

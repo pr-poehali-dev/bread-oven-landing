@@ -29,7 +29,7 @@ const About = () => {
       <div className="container relative max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="font-oswald text-4xl md:text-5xl font-bold uppercase mb-4" style={{ color: 'hsl(var(--ink))' }}>
-            О компании <span className="text-fire-gradient">ТЕХНОСИБ</span>
+            О компании <span className="text-fire-gradient">Техно-Сиб</span>
           </h2>
           <p className="text-xl md:text-2xl font-medium" style={{ color: 'hsl(var(--ink) / 0.8)' }}>
             Ваш надежный партнер с 2001 года
