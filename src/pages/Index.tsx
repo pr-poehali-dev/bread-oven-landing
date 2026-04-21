@@ -1,12 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Header from '@/components/landing/Header';
+import Hero from '@/components/landing/Hero';
+import Catalog from '@/components/landing/Catalog';
+import Advantages from '@/components/landing/Advantages';
+import Technologies from '@/components/landing/Technologies';
+import Quiz from '@/components/landing/Quiz';
+import Warranty from '@/components/landing/Warranty';
+import Service from '@/components/landing/Service';
+import About from '@/components/landing/About';
+import FAQ from '@/components/landing/FAQ';
+import Contacts from '@/components/landing/Contacts';
+import Footer from '@/components/landing/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
+    <div className="bg-coal text-white">
+      <Header />
+      <main>
+        <Hero />
+        <Catalog />
+        <Advantages />
+        <Technologies />
+        <Quiz />
+        <Warranty />
+        <Service />
+        <About />
+        <FAQ />
+        <Contacts />
+      </main>
+      <Footer />
     </div>
   );
 };
